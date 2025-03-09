@@ -31,4 +31,3 @@ spec:
     - protocol: TCP
       port: 5173
       targetPort: 5173
-      nodePort: 30007 # Minikube exposes it on this port
