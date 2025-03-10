@@ -57,7 +57,7 @@ jobs:
       - name: Get Minikube Service URL
         run: |
 
-          minikube service isthisart-app --url
+          minikube service isthisart-app-service --url
           SERVICE_URL=$(minikube service isthisart-app-service --url)
           echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
 
