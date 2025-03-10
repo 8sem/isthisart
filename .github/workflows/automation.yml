@@ -3,10 +3,10 @@ name: CI/CD for isthisart-app
 on:
   push:
     branches:
-      - main # Run on push to main branch
+      - main
   pull_request:
     branches:
-      - main # Run on PR to main branch
+      - main
 
 jobs:
   build:
@@ -54,22 +54,21 @@ jobs:
           kubectl apply -f k8s/k8s.yml
           kubectl get pods
 
-      - name: Expose isthisart-app Service
-        run: |
-          minikube service list
-
       - name: Get Minikube Service URL
-        run: minikube service isthisart-app-service --url
-
-      - name: Start ngrok Tunnel
         run: |
-          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok http $(echo ${{ env.SERVICE_URL }} | awk -F':' '{print $3}') > ngrok.log 2>&1 &
+          SERVICE_URL=$(minikube service isthisart-app-service --url)
+          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+
       - name: Install ngrok
         run: |
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
           sudo apt update && sudo apt install ngrok
+
+      - name: Start ngrok Tunnel
+        run: |
+          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          nohup ngrok http $SERVICE_URL > ngrok.log 2>&1 &
 
       - name: Fetch ngrok Public URL
         run: |
