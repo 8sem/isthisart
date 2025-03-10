@@ -54,21 +54,11 @@ jobs:
           kubectl apply -f k8s/k8s.yml
           kubectl get pods
 
+      - name: Expose isthisart-app Service
+        run: |
+          minikube service list
+
       - name: Get Minikube Service URL
         run: |
 
           minikube service isthisart-app-service --url
-          SERVICE_URL=$(minikube service isthisart-app-service --url)
-          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
-
-      - name: Start ngrok Tunnel
-        run: |
-          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          tmux new-session -d -s ngrok_session 'ngrok http 192.168.49.2:31065'
-
-      - name: Fetch ngrok Public URL
-        run: |
-          sleep 10
-          NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
-          echo "Your app is publicly accessible at: $NGROK_URL"
