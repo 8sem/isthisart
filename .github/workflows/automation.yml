@@ -64,15 +64,11 @@ jobs:
       - name: Start ngrok Tunnel
         run: |
           ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          tmux new-session -d -s ngrok_session 'ngrok http 192.168.49.2:31065'
+          nohup ngrok http 192.168.49.2:31065 > ngrok.log 2>&1 &
 
       - name: Fetch ngrok Public URL
         run: |
-          sleep 5  # Ensure ngrok has time to initialize
+          sleep 10
           NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
           echo "Your app is publicly accessible at: $NGROK_URL"
-
-      - name: Verify ngrok is running
-        run: |
-          ps aux | grep ngrok
