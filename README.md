@@ -8,7 +8,7 @@
 
 ## Run using docker
 
-```
+``` 
 docker pull 8sem/isthatart-app:latest
 ```
 - the.
